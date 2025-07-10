@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useState, Suspense } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 
 export default function AdminPacientes() {
   const [search, setSearch] = useState('')
@@ -19,15 +19,8 @@ export default function AdminPacientes() {
   const [rolUsuario, setRolUsuario] = useState(null)
   const router = useRouter()
   const [modalPaciente, setModalPaciente] = useState(null)
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-  const idDesdeURL = searchParams.get('pacienteId')
-  if (idDesdeURL && pacientes.length > 0) {
-    const encontrado = pacientes.find((p) => p.id === idDesdeURL)
-    if (encontrado) setSelected(encontrado)
-  }
-}, [pacientes])
+  
+  const SearchParamHandler = dynamic(() => import('./SearchParamHandler'), { ssr: false })
 
   useEffect(() => {
     const fetchPacientes = async () => {
@@ -162,7 +155,7 @@ export default function AdminPacientes() {
 
   return (
   <>
-    <Suspense fallback={<div className="text-center text-gray-500 mt-10">Cargando paciente...</div>}>
+    <SearchParamHandler pacientes={pacientes} setSelected={setSelected} />
     <Header />
 
     <div className="min-h-screen pt-24 px-4 pb-13.5 bg-gradient-to-br from-white via-blue-50 to-white flex flex-col lg:flex-row gap-6 overflow-hidden">
@@ -411,7 +404,6 @@ export default function AdminPacientes() {
             </div>
           </div>
         )}
-        </Suspense>
     </>
   )
 }
