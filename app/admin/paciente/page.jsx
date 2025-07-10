@@ -2,7 +2,7 @@
 
 import Header from '@/components/Header'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
@@ -162,6 +162,7 @@ export default function AdminPacientes() {
 
   return (
   <>
+    <Suspense fallback={<div className="text-center text-gray-500 mt-10">Cargando paciente...</div>}>
     <Header />
 
     <div className="min-h-screen pt-24 px-4 pb-13.5 bg-gradient-to-br from-white via-blue-50 to-white flex flex-col lg:flex-row gap-6 overflow-hidden">
@@ -410,6 +411,7 @@ export default function AdminPacientes() {
             </div>
           </div>
         )}
+        </Suspense>
     </>
   )
 }
