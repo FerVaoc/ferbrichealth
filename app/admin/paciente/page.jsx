@@ -155,7 +155,10 @@ export default function AdminPacientes() {
 
   return (
   <>
-    <SearchParamHandler pacientes={pacientes} setSelected={setSelected} />
+    <Suspense fallback={null}>
+      <SearchParamHandler pacientes={pacientes} setSelected={setSelected} />
+    </Suspense>
+
     <Header />
 
     <div className="min-h-screen pt-24 px-4 pb-13.5 bg-gradient-to-br from-white via-blue-50 to-white flex flex-col lg:flex-row gap-6 overflow-hidden">
