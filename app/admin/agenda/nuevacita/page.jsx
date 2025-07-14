@@ -127,10 +127,54 @@ export default function NuevaCitaPage() {
     if (error) {
       console.error('Error al registrar la cita:', error)
       alert('Ocurrió un error al registrar la cita. Intenta nuevamente.')
-    } else {
-      alert('✅ Cita registrada correctamente.')
-      router.push('/admin/agenda')
+      return
     }
+
+    //Busca el token de notificación del medico en la tabla
+    const { data: tokenData, error: tokenError } = await supabase
+      .from('tokens_notificaciones')
+      .select('token')
+      .eq('usuario_id', form.medico_id)
+      .single()
+
+    if (tokenError || !tokenData?.token) {
+      console.warn('No se encontró el token de notificación del médico.')
+    } else {
+      // Enviar notificación automática inmediata
+      await fetch('/api/enviarNotificacion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: tokenData.token,
+          title: '📅 Nueva cita registrada',
+          body: 'Tienes una nueva cita médica agendada. Revisa tu agenda.'
+        })
+      })
+
+      // 🕒 Calcular fecha 10 minutos antes de la cita
+      const fechaCita = new Date(form.fecha_hora)
+      const fechaEnvio = new Date(fechaCita.getTime() - 10 * 60 * 1000)
+
+      // 📌 Insertar notificación programada
+      const { error: programadaError } = await supabase
+        .from('notificaciones_programadas')
+        .insert([{
+          usuario_id: form.medico_id,
+          token: tokenData.token,
+          titulo: '⏰ Recordatorio de cita médica',
+          cuerpo: 'Tienes una cita en 10 minutos. Verifica tu agenda.',
+          fecha_envio: fechaEnvio.toISOString()
+        }])
+
+      if (programadaError) {
+        console.error('❌ Error al guardar notificación programada:', programadaError)
+      }
+    }
+
+    alert('✅ Cita registrada correctamente.')
+    router.push('/admin/agenda')
   }
 
   return (

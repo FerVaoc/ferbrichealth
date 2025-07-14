@@ -9,6 +9,10 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
+//implementacion de push con firebase
+import { firebaseApp } from '@/lib/firebase'
+import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+
 const AvatarFallback = ({ children, className = '' }) => (
   <div className={`flex items-center justify-center rounded-full font-medium text-sm ${className}`}>{children}</div>
 )
@@ -213,6 +217,67 @@ export default function DashboardMedico() {
     p.nombre.toLowerCase().includes(busquedaHistorial.toLowerCase())
   )
 
+  //logica de notificaciones
+    useEffect(() => {
+      if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+        const registrarNotificaciones = async () => {
+          try {
+            const messaging = getMessaging(firebaseApp)
+
+            const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js")
+            console.log("✅ Service Worker registrado")
+
+            const currentToken = await getToken(messaging, {
+              vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+              serviceWorkerRegistration: registration,
+            })
+
+            if (currentToken) {
+              console.log("🎯 Token FCM obtenido:", currentToken)
+
+              const { data: auth } = await supabase.auth.getUser()
+              const userId = auth?.user?.id
+
+              if (userId) {
+                const { data, error } = await supabase
+                  .from('tokens_notificaciones')
+                  .upsert(
+                    [{ usuario_id: userId, token: currentToken }],
+                    { onConflict: ['usuario_id'] }
+                  )
+
+                if (error) {
+                  console.error("❌ Error al guardar token en Supabase:", error)
+                } else {
+                  console.log("✅ Token guardado en Supabase")
+                }
+              }
+            } else {
+              console.warn("⚠️ No se obtuvo el token. ¿Tal vez el usuario rechazó los permisos?")
+            }
+
+            onMessage(messaging, (payload) => {
+              console.log("🔔 Notificación en foreground:", payload)
+
+              const title = payload?.notification?.title || 'Nueva notificación'
+              const body = payload?.notification?.body || 'Revisa tu agenda'
+
+              if (Notification.permission === 'granted') {
+                new Notification(title, {
+                  body,
+                  icon: '/logo.png',
+                })
+              }
+            })
+          } catch (err) {
+            console.error("❌ Error registrando notificaciones:", err)
+          }
+        }
+
+        registrarNotificaciones()
+      }
+    }, [])
+
   return (
     <>
       <Header />
@@ -369,7 +434,6 @@ export default function DashboardMedico() {
             </div>
           </div>
         )}
-
 
         {/* Modal de historial de pacientes */}
         {mostrarModalHistorial && (
