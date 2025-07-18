@@ -121,9 +121,9 @@ export default function Header() {
                   <a href="#" className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-full">
                     <i className="fas fa-users"></i> Usuarios
                   </a>
-                  <div className="absolute top-full left-0 pt-2">
-                    {openDropdown === 'usuarios' && (
-                      <div className="flex flex-col bg-white text-gray-700 shadow-md rounded-md min-w-[160px] z-50">
+                    <div className="absolute top-full left-0 pt-2 z-[60]">
+                      {openDropdown === 'usuarios' && (
+                        <div className="flex flex-col bg-white text-gray-700 shadow-md rounded-md min-w-[160px]">
                         {rol === 'admin' && (
                           <>
                             <a href="/admin/medico" className="px-4 py-2 hover:bg-gray-100">Médicos</a>
@@ -174,7 +174,7 @@ export default function Header() {
                       )}
                     </a>
 
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 pt-2">
+                    <div className="absolute top-full left-0 md:left-1/2 transform md:-translate-x-1/2 pt-2 z-[60]">
                       {perfilDropdownOpen && (
                         <div className="flex flex-col bg-white text-gray-700 shadow-md rounded-md min-w-[160px] z-50">
                           <a href="/admin/perfil" className="px-4 py-2 hover:bg-gray-100">Mi Perfil</a>

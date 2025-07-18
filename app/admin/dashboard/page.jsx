@@ -526,18 +526,24 @@ export default function DashboardAdmin() {
             </h2>
 
             {/* Tabs */}
-            <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
-              {['consultas', 'recetas', 'analisis', 'signos'].map((tab) => (
+            <div className="grid grid-cols-2 sm:grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 mb-6">
+              {[
+                { key: 'consultas', label: 'Consultas', icon: 'fas fa-stethoscope' },
+                { key: 'recetas', label: 'Recetas', icon: 'fas fa-prescription-bottle-alt' },
+                { key: 'analisis', label: 'Análisis', icon: 'fas fa-vials' },
+                { key: 'signos', label: 'Signos', icon: 'fas fa-heartbeat' },
+              ].map((tab) => (
                 <button
-                  key={tab}
-                  onClick={() => setPestañaActiva(tab)}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition hover:shadow-md hover:-translate-y-0.5 cursor-pointer ${
-                    pestañaActiva === tab
+                  key={tab.key}
+                  onClick={() => setPestañaActiva(tab.key)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition hover:shadow-md hover:-translate-y-0.5 cursor-pointer ${
+                    pestañaActiva === tab.key
                       ? 'bg-gradient-to-r from-[#003f74] to-[#006bb3] text-white'
                       : 'bg-gray-200 text-gray-700'
                   }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  <i className={tab.icon}></i>
+                  {tab.label}
                 </button>
               ))}
             </div>

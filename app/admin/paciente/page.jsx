@@ -234,11 +234,11 @@ export default function AdminPacientes() {
         {rolUsuario && selected && (
           <>
             {/* Acciones */}
-            <div className="flex gap-4 mb-8">
+            <div className="grid grid-cols-2 sm:flex gap-4 mb-8 justify-center sm:justify-start">
               {(rolUsuario === 'medico' || rolUsuario === 'admin') && (
                 <button
                   onClick={handleNuevaConsulta}
-                  className="p-3 bg-gradient-to-r from-[#003f74] to-[#006bb3] text-white rounded-xl font-semibold shadow hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-2 cursor-pointer"
+                  className="p-3 bg-gradient-to-r from-[#003f74] to-[#006bb3] text-white rounded-xl font-semibold shadow hover:shadow-md hover:-translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <i className="fas fa-notes-medical"></i> Nueva Consulta
                 </button>
@@ -246,32 +246,38 @@ export default function AdminPacientes() {
 
               <button
                 onClick={() => router.push(`/admin/signos?pacienteId=${selected.id}`)}
-                className="p-3 bg-gradient-to-r from-[#003f74] to-[#006bb3] text-white rounded-xl font-semibold shadow hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-2 cursor-pointer"
+                className="p-3 bg-gradient-to-r from-[#003f74] to-[#006bb3] text-white rounded-xl font-semibold shadow hover:shadow-md hover:-translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <i className="fas fa-heartbeat"></i> Registrar Signos
               </button>
 
               <button
                 onClick={() => setModalPaciente(selected)}
-                className="p-3 bg-gray-200 text-gray-800 rounded-xl font-semibold shadow hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-2 cursor-pointer"
+                className="p-3 bg-gray-200 text-gray-800 rounded-xl font-semibold shadow hover:shadow-md hover:-translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <i className="fas fa-user"></i> Ver Detalles
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 mb-6">
-              {['consultas', 'recetas', 'analisis', 'signos'].map((tab) => (
+            <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-4 justify-center sm:justify-start mb-6">
+              {[
+                { key: 'consultas', label: 'Consultas', icon: 'fas fa-stethoscope' },
+                { key: 'recetas', label: 'Recetas', icon: 'fas fa-prescription-bottle-alt' },
+                { key: 'analisis', label: 'Análisis', icon: 'fas fa-vials' },
+                { key: 'signos', label: 'Signos', icon: 'fas fa-heartbeat' },
+              ].map((tab) => (
                 <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition hover:shadow-md hover:-translate-y-0.5 cursor-pointer ${
-                    activeTab === tab
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition hover:shadow-md hover:-translate-y-0.5 cursor-pointer ${
+                    activeTab === tab.key
                       ? 'bg-gradient-to-r from-[#003f74] to-[#006bb3] text-white'
                       : 'bg-gray-200 text-gray-700'
                   }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  <i className={`${tab.icon}`}></i>
+                  {tab.label}
                 </button>
               ))}
             </div>
